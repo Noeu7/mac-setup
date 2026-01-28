@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Require dockutil
 if ! command -v dockutil >/dev/null 2>&1; then
   echo "dockutil not found. Install it first (e.g. brew install dockutil)." >&2
   exit 1
@@ -10,25 +9,29 @@ fi
 add_if_exists() {
   local app_path="$1"
   if [[ -d "$app_path" ]]; then
-    if ! dockutil --find "$app_path" >/dev/null 2>&1; then
-      echo "Adding to Dock: $app_path"
-      dockutil --add "$app_path" --no-restart
-    else
-      echo "Already in Dock: $app_path"
-    fi
+    echo "Adding to Dock: $app_path"
+    dockutil --add "$app_path" --no-restart
   else
     echo "Not found, skipping: $app_path"
   fi
 }
 
-# (Optional) wipe existing Dock apps
-# dockutil --remove all --no-restart
+echo "== Reset Dock apps =="
 
+# 1) Dockのアプリ欄を全消し（スッキリ）
+dockutil --remove all --no-restart
+
+# 2) 残したい標準アプリ
+add_if_exists "/System/Applications/Launchpad.app"
+add_if_exists "/System/Applications/App Store.app"
+add_if_exists "/System/Applications/System Settings.app"
+
+# 3) 業務アプリ
 add_if_exists "/Applications/Prisma Access Browser.app"
 add_if_exists "/Applications/Google Chrome.app"
 add_if_exists "/Applications/zoom.us.app"
 add_if_exists "/Applications/Okta Verify.app"
 
-# Restart Dock once at the end
+# 4) 反映
 killall Dock
 echo "Dock updated."
