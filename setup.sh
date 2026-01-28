@@ -22,5 +22,6 @@ brew bundle --file "$SCRIPT_DIR/Brewfile"
 
 # 4) Install Talon from appcast (idempotent-ish; will reinstall if vendor changes)
 "$SCRIPT_DIR/scripts/pab_install.sh" packaged
+"$SCRIPT_DIR/scripts/dock_setup.sh"
 
 echo "== mac-setup done =="
