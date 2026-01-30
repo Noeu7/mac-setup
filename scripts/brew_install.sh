@@ -1,25 +1,20 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
 
 echo "== Homebrew install check =="
 
-if command -v brew >/dev/null 2>&1; then
-  echo "Homebrew already installed:"
-  brew --version
+# IMPORTANT:
+# Do NOT rely on `command -v brew` here because PATH may not be set yet.
+# Check actual brew paths instead.
+if [[ -x /opt/homebrew/bin/brew || -x /usr/local/bin/brew ]]; then
+  echo "Homebrew already installed (found brew binary)."
   exit 0
 fi
 
-echo "Installing Homebrew..."
+echo "Installing Homebrew (interactive)..."
+echo "You may be prompted for sudo password and ENTER confirmation."
 
-NONINTERACTIVE=1 /bin/bash -c \
-  "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-# Apple Silicon / Intel 両対応
-if [[ -x /opt/homebrew/bin/brew ]]; then
-  eval "$(/opt/homebrew/bin/brew shellenv)"
-elif [[ -x /usr/local/bin/brew ]]; then
-  eval "$(/usr/local/bin/brew shellenv)"
-fi
+echo "Homebrew installation completed."
 
-echo "Homebrew installed:"
-brew --version
